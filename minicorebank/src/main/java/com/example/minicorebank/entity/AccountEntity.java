@@ -10,22 +10,51 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-@Entity @Table(name = "accounts")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "accounts")
 public class AccountEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customerEntity;
 
-    @Column(name = "account_no", nullable = false, unique = true)
+    @Column(name = "account_no", nullable = false, unique = true, length = 30)
     private String accountNo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String type;    //PAYMENT
+
+    @Column(nullable = false, length = 20)
+    private String status;
+
+    @Column(name = "balance_snapshot",nullable = false,precision = 19, scale = 2)
+    private BigDecimal balanceSnapshot = BigDecimal.ZERO;
+
+    @Version
+    @Column(nullable = false)
+    private  Long version = 0L;
+
+    @Column(nullable = false)
+    private String currency; // VND
+
+
+    @Column(name = "created_at", nullable = false, updatable = false,insertable = false)
+    private Instant createdAt;
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
 
     public Long getId() {
         return id;
@@ -91,26 +120,5 @@ public class AccountEntity {
         this.createdAt = createdAt;
     }
 
-    @Column(nullable = false)
-    private String status;
 
-    @Column(name = "balance_snap",nullable = false)
-    private BigDecimal balanceSnapshot = BigDecimal.ZERO;
-
-    @Version
-    private  Long version;
-
-    @Column(name = "created_at", nullable = false, updatable = false,insertable = false)
-    private Instant createdAt;
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    @Column(nullable = false)
-    private String currency; // VND
 }

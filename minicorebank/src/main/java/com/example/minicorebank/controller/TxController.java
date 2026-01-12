@@ -1,0 +1,27 @@
+package com.example.minicorebank.controller;
+
+import com.example.minicorebank.dto.DepositRequest;
+import com.example.minicorebank.dto.TransferRequest;
+import com.example.minicorebank.entity.TransactionEntity;
+import com.example.minicorebank.service.PostingService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/tx")
+public class TxController {
+
+    private final PostingService postingService;
+
+    @PostMapping("/deposit")
+    public TransactionEntity deposit(@Valid @RequestBody DepositRequest req) {
+        return postingService.deposit(req);
+    }
+
+    @PostMapping("/transfer")
+    public TransactionEntity transfer(@Valid @RequestBody TransferRequest req) {
+        return postingService.transfer(req);
+    }
+}
