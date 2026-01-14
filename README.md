@@ -25,9 +25,6 @@ Mini Core Bank là dự án mini mô phỏng các chức năng nền tảng củ
 - Laragon (MySQL/MariaDB) hoặc MySQL local
 
 
-
-  withdraw
-
 accounts/{id}/transactions + paging/filter
 
 reverse tx
