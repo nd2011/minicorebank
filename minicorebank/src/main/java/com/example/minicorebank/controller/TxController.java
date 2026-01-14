@@ -2,6 +2,7 @@ package com.example.minicorebank.controller;
 
 import com.example.minicorebank.dto.DepositRequest;
 import com.example.minicorebank.dto.TransferRequest;
+import com.example.minicorebank.dto.WithdrawRequest;
 import com.example.minicorebank.entity.TransactionEntity;
 import com.example.minicorebank.service.PostingService;
 import jakarta.validation.Valid;
@@ -23,5 +24,9 @@ public class TxController {
     @PostMapping("/transfer")
     public TransactionEntity transfer(@Valid @RequestBody TransferRequest req) {
         return postingService.transfer(req);
+    }
+    @PostMapping("/withdraw")
+    public TransactionEntity withdraw(@Valid @RequestBody WithdrawRequest req){
+        return postingService.withdraw(req);
     }
 }

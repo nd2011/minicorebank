@@ -23,7 +23,7 @@ public class TransactionEntity {
         this.id = id;
     }
 
-    public String getTxRef() {
+    public String getTxRef(String s) {
         return txRef;
     }
 

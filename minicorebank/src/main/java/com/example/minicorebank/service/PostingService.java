@@ -3,10 +3,12 @@ package com.example.minicorebank.service;
 import com.example.minicorebank.dto.DepositRequest;
 import com.example.minicorebank.dto.TransferRequest;
 import com.example.minicorebank.entity.*;
+import com.example.minicorebank.dto.WithdrawRequest;
 import com.example.minicorebank.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -158,4 +160,52 @@ public class PostingService {
         e.setCurrency(ccy);
         return e;
     }
+    @Transactional
+    public TransactionEntity withdraw(WithdrawRequest req){
+        if(req.idempotencuKey() !=null){
+            var existed = transactionRepository.findByIdempotencyKey(req.idempotencuKey());
+            if (existed.isPresent()) return existed.get();
+        }
+
+        String ccy = (req.currency() == null || req.currency().isBlank() ? DEFAULT_CCY : req.currency().trim());
+
+        AccountEntity from = accountRepository.findByIdForUpdate(req.accountId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found: " + req.accountId()));
+        AccountEntity house = accountRepository.findByAccountNoForUpdate(HOUSE_ACCOUNT_NO)
+                .orElseThrow(() -> new IllegalStateException("Missing house account. Run Flyway V3 seed."));
+
+        assertActive(from);
+        assertCurrency(from, ccy);
+
+        BigDecimal amount = req.amount();
+        if (from.getBalanceSnapshot().compareTo(amount) < 0){
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        TransactionEntity tx = new TransactionEntity();
+        tx.setTxRef(genTxRef());
+        tx.setType("WITHDRAW");
+        tx.setStatus("POSTED");
+        tx.setAmount(amount);
+        tx.setCurrency(ccy);
+        tx.setFromAccount(from);
+        tx.setToAccount(house);
+        tx.setIdempotencyKey(req.idempotencuKey());
+        tx.setNote(req.note());
+        tx = transactionRepository.save(tx);
+
+        // Withdraw: customer giảm tiền (DEBIT), house tăng tiền (CREDIT)
+        applyDebit(from, amount);
+        applyCredit(house, amount);
+
+        accountRepository.save(from);
+        accountRepository.save(house);
+
+        ledgerEntryRepository.save(newLedger(tx, from, "DEBIT", amount, ccy));
+        ledgerEntryRepository.save(newLedger(tx, house, "CREDIT", amount, ccy));
+
+        return tx;
+    }
+
+
 }

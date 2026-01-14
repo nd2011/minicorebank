@@ -82,7 +82,7 @@ public class LedgerEntryEntity {
     @Column(nullable = false, length = 10)
     private String direction; // DEBIT, CREDIT
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(nullable = false, precision = 19)
     private BigDecimal amount;
 
     @Column(nullable = false, length = 10)
