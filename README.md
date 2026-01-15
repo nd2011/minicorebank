@@ -24,8 +24,7 @@ Mini Core Bank là dự án mini mô phỏng các chức năng nền tảng củ
 - Maven 3.9+
 - Laragon (MySQL/MariaDB) hoặc MySQL local
 
-
-accounts/{id}/transactions + paging/filter
+ paging/filter
 
 reverse tx
 
