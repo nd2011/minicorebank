@@ -52,7 +52,7 @@ public class ReadController {
         Instant toTs = (to == null || to.isBlank()) ? null : Instant.parse(to);
 
         return readTxService.listAccountTx(
-                accountId,direction,type,status,fromTs,toTs,maxAmount,minAmount,q,pageable
+                accountId,direction,type,status,fromTs,toTs,minAmount,maxAmount,q,pageable
                 );
     }
 
