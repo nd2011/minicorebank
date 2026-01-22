@@ -6,7 +6,7 @@ Mini Core Bank là dự án mini mô phỏng các chức năng nền tảng củ
 
 ## Tech Stack
 
-- Java: **17+** (bạn đang chạy Java 24 cũng OK)
+- Java: **17+** 
 - Spring Boot: 4.x
 - Spring Web, Validation
 - Spring Data JPA (Hibernate)
@@ -23,8 +23,6 @@ Mini Core Bank là dự án mini mô phỏng các chức năng nền tảng củ
 - JDK 17+ (khuyên dùng 17 hoặc 21)
 - Maven 3.9+
 - Laragon (MySQL/MariaDB) hoặc MySQL local
-
- paging/filter
 
 reverse tx
 
