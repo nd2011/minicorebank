@@ -47,6 +47,20 @@ public class AccountEntity {
     @Column(name = "created_at", nullable = false, updatable = false,insertable = false)
     private Instant createdAt;
 
+    public void debit(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("Debit amount must be positive");
+        }
+        this.balanceSnapshot = this.balanceSnapshot.subtract(amount);
+    }
+
+    public void credit(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("Credit amount must be positive");
+        }
+        this.balanceSnapshot = this.balanceSnapshot.add(amount);
+    }
+
     public String getCurrency() {
         return currency;
     }

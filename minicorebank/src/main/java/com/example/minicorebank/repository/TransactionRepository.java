@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long>, JpaSpecificationExecutor<TransactionEntity> {
     Optional<TransactionEntity> findByTxRef(String txRef);
     Optional<TransactionEntity> findByIdempotencyKey(String idempotencyKey);
+    boolean existsByReversedOfTxId(Long reversedOfTxId);
 
 }

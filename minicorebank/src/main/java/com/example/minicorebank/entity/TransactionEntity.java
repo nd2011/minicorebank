@@ -23,9 +23,8 @@ public class TransactionEntity {
         this.id = id;
     }
 
-    public String getTxRef(String s) {
-        return txRef;
-    }
+    public String getTxRef() { return txRef; }
+
 
     public void setTxRef(String txRef) {
         this.txRef = txRef;
@@ -129,7 +128,7 @@ public class TransactionEntity {
     @JoinColumn(name = "to_account_id")
     private AccountEntity toAccount;
 
-    @Column(name = "idempotency_key", unique = true, length = 80)
+    @Column(name = "idempotency_key", length = 80)
     private String idempotencyKey;
 
     @Column(length = 255)
@@ -137,4 +136,16 @@ public class TransactionEntity {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
+
+    public Long getReversedOfTxId() {
+        return reversedOfTxId;
+    }
+
+    public void setReversedOfTxId(Long reversedOfTxId) {
+        this.reversedOfTxId = reversedOfTxId;
+    }
+
+    @Column(name = "reversed_of_tx_id")
+    private Long reversedOfTxId;
+
 }
