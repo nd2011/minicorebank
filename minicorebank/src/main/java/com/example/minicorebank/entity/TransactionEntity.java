@@ -146,6 +146,6 @@ public class TransactionEntity {
     }
 
     @Column(name = "reversed_of_tx_id")
-    private Long reversedOfTxId;
+    private Long reversedOfTxId; // aaaa
 
 }
