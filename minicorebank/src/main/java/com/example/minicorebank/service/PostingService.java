@@ -99,7 +99,7 @@ public class PostingService {
         assertCurrency(from, ccy);
         assertCurrency(to, ccy);
 
-        if (from.getBalanceSnapshot().compareTo(amount) < 0) {
+        if (from.availableSnapshot().compareTo(req.amount())<0) {
             throw new IllegalArgumentException("Insufficient balance");
         }
 
@@ -178,7 +178,7 @@ public class PostingService {
         assertCurrency(from, ccy);
 
         BigDecimal amount = req.amount();
-        if (from.getBalanceSnapshot().compareTo(amount) < 0){
+        if (from.availableSnapshot().compareTo(req.amount()) < 0){
             throw new IllegalArgumentException("Insufficient balance");
         }
 

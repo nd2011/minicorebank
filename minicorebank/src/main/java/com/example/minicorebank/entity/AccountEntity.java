@@ -60,6 +60,25 @@ public class AccountEntity {
         }
         this.balanceSnapshot = this.balanceSnapshot.add(amount);
     }
+    @Column(nullable = false)
+    private BigDecimal frozenSnapshot = BigDecimal.ZERO;
+    public BigDecimal availableSnapshot() {
+        return balanceSnapshot.subtract(frozenSnapshot);
+    }
+
+    public void freeze(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("Freeze amount must be positive");
+        }
+        this.frozenSnapshot = this.frozenSnapshot.add(amount);
+    }
+
+    public void unfreeze(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("Unfreeze amount must be positive");
+        }
+        this.frozenSnapshot = this.frozenSnapshot.subtract(amount);
+    }
 
     public String getCurrency() {
         return currency;
