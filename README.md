@@ -23,6 +23,3 @@ Mini Core Bank là dự án mini mô phỏng các chức năng nền tảng củ
 - JDK 17+ (khuyên dùng 17 hoặc 21)
 - Maven 3.9+
 - Laragon (MySQL/MariaDB) hoặc MySQL local
-
-
-freeze/unfreeze
