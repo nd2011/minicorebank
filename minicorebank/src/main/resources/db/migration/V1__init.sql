@@ -65,3 +65,16 @@ create table if not exists users (
   created_at timestamp not null default current_timestamp,
   constraint fk_users_customer foreign key (customer_id) references customers(id)
 );
+alter table users
+  add column if not exists status varchar(20) not null default 'ACTIVE',
+  add column if not exists email varchar(120) null,
+  add column if not exists phone varchar(30) null,
+  add column if not exists updated_at timestamp null default current_timestamp on update current_timestamp,
+  add column if not exists last_login_at timestamp null;
+
+-- 1 customer chỉ gắn 1 user (nhiều NULL vẫn ok)
+create unique index if not exists ux_users_customer_id on users(customer_id);
+
+-- nếu muốn email/phone unique (tùy bạn dùng login field nào)
+create unique index if not exists ux_users_email on users(email);
+create unique index if not exists ux_users_phone on users(phone);
