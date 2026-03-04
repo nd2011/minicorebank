@@ -38,7 +38,7 @@ public class AccountEntity {
 
     @Version
     @Column(nullable = false)
-    private  Long version = 0L;
+    private  Long version;
 
     @Column(nullable = false)
     private String currency; // VND

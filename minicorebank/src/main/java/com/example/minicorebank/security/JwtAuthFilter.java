@@ -25,11 +25,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs");
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
@@ -37,9 +42,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = auth.substring(7);
-
         try {
+            String token = auth.substring(7);
             Claims claims = jwtService.parse(token).getPayload();
 
             Long userId = Long.valueOf(claims.getSubject());
@@ -47,15 +51,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Long customerId = claims.get("customerId", Long.class);
 
             AuthUser principal = new AuthUser(userId, role, customerId);
-
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-            var authentication =
-                    new UsernamePasswordAuthenticationToken(principal, null, authorities);
 
+            var authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
-            // có thể không return, vẫn cho đi tiếp như request không auth
         }
 
         filterChain.doFilter(request, response);

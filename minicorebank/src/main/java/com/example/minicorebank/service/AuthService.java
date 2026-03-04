@@ -50,8 +50,8 @@ public class AuthService {
 
             // 2) accounts
             AccountEntity a = new AccountEntity();
-            a.setId(c.getId());
-            a.setAccountNo(generateAccountNo());
+        a.setCustomerEntity(c);
+        a.setAccountNo(generateAccountNo());
             a.setType("WALLET");
             a.setStatus("ACTIVE");
             a.setCurrency(req.currency());
