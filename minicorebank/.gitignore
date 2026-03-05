@@ -34,7 +34,7 @@ build/
 .vscode/
 # dependencies
 node_modules/
-// them1
+// them10
 # build
 dist/
 dist-ssr/
