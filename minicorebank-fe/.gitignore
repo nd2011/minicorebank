@@ -23,7 +23,16 @@ dist-ssr
 *.sln
 *.sw?
 
-node_modules/
-dist/
+# FE deps/build
+**/node_modules/
+**/dist/
+**/dist-ssr/
+
+# env
 .env
 .env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
