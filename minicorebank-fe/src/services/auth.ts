@@ -1,7 +1,10 @@
 import { http } from "./http"
 
 export type TokenRes = {
-  token: string
+  accessToken: string
+  tokenType: string
+  role: "EMPLOYEE" | "CUSTOMER" | string
+  customerId: string | null
 }
 
 export type LoginReq = {

@@ -1,9 +1,12 @@
 import axios from "axios"
 
 export const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
   headers: { "Content-Type": "application/json" },
 })
+
+console.log("VITE_API_URL =", import.meta.env.VITE_API_URL)
+console.log("HTTP baseURL =", http.defaults.baseURL)
 
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem("token")

@@ -1,3 +1,4 @@
+import { login } from "@/services/auth"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -8,6 +9,10 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
   const navigate = useNavigate()
   const year = useMemo(() => new Date().getFullYear(), [])
   const [showPassword, setShowPassword] = useState(false)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
@@ -77,21 +82,38 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
               <p className="mt-2 text-sm text-slate-200/70">
                 Chào mừng bạn quay lại. Hãy nhập thông tin để tiếp tục.
               </p>
-
+                  {error && (
+                      <div className="mt-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                        {error}
+                      </div>
+                    )}
               <form
                 className="mt-8 space-y-5"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault()
-                  alert("Login submit (demo)")
+                  setError(null)
+
+                  try {
+                    setLoading(true)
+                    const res = await login({ username, password })
+                    localStorage.setItem("token", res.accessToken)
+                    localStorage.setItem("role", res.role) // (tuỳ chọn)
+                    navigate("/dashboard")
+                  } catch (err: any) {
+                    setError(err?.response?.data?.message ?? "Đăng nhập thất bại")
+                  } finally {
+                    setLoading(false)
+                  }
                 }}
               >
                 <div className="space-y-2">
-                  <label className="text-sm text-slate-200/80">Email</label>
+                  <label className="text-sm text-slate-200/80">Tên người dùng</label>
                   <div className="rounded-2xl border border-white/10 bg-white/5 focus-within:border-indigo-400/60 focus-within:bg-white/10">
                     <input
-                      type="email"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       required
-                      placeholder="you@company.com"
+                      placeholder="username"
                       className="w-full bg-transparent px-4 py-3 text-slate-100 placeholder:text-slate-400 outline-none"
                     />
                   </div>
@@ -113,6 +135,8 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
                     <div className="flex items-center">
                       <input
                         type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                         placeholder="••••••••"
                         className="w-full bg-transparent px-4 py-3 text-slate-100 placeholder:text-slate-400 outline-none"
@@ -145,9 +169,10 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
 
                 <button
                   type="submit"
+                  disabled={loading}
                   className="w-full rounded-2xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:brightness-110 active:scale-[0.99]"
                 >
-                  Đăng nhập
+                  {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </button>
 
                 <div className="relative py-2">
@@ -188,3 +213,4 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
     </div>
   )
 }
+

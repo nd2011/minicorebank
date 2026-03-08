@@ -43,7 +43,9 @@ export default function RegisterPage() {
         email,
         currency,
       })
-      localStorage.setItem("token", res.token)
+      console.log("Register res:", res)
+      localStorage.setItem("token", res.accessToken)
+      localStorage.setItem("role", res.role)
       navigate("/dashboard")
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Đăng ký thất bại. Vui lòng thử lại.")
