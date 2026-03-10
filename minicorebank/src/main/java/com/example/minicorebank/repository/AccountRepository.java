@@ -21,4 +21,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     @Query("select a from AccountEntity a where a.accountNo = :no")
     Optional<AccountEntity> findByAccountNoForUpdate(@Param("no") String no);
     boolean existsByIdAndCustomerEntity_Id(Long id, Long customerId);
+
+    Optional<AccountEntity> findTopByCustomerEntity_IdOrderByIdAsc(Long customerId);
 }

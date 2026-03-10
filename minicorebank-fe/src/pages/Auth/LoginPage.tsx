@@ -1,4 +1,4 @@
-import { login } from "@/services/auth"
+import { login } from "../../services/auth"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -97,7 +97,9 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
                     setLoading(true)
                     const res = await login({ username, password })
                     localStorage.setItem("token", res.accessToken)
+                    localStorage.setItem("tokenType", res.tokenType)
                     localStorage.setItem("role", res.role) // (tuỳ chọn)
+                    localStorage.setItem("customerId", String(res.customerId ?? ""))
                     navigate("/dashboard")
                   } catch (err: any) {
                     setError(err?.response?.data?.message ?? "Đăng nhập thất bại")

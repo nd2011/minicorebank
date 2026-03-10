@@ -9,8 +9,8 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
 
-  const role = useMemo(() => localStorage.getItem("role") ?? "", [])
-  const customerId = useMemo(() => localStorage.getItem("customerId") ?? "", [])
+const role = localStorage.getItem("role") ?? "GUEST"
+const customerId = localStorage.getItem("customerId") ?? ""
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
