@@ -50,8 +50,18 @@ public class ReadController {
 
     @GetMapping("/accounts/{id}")
     public AccountEntity getAccount(@PathVariable Long id) {
-        return accountRepository.findById(id)
+        AccountEntity a = accountRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found: " + id));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof AuthUser me) {
+            if ("CUSTOMER".equals(me.role())) {
+                Long ownerCustomerId = a.getCustomerEntity().getId();
+                if (me.customerId() == null || !ownerCustomerId.equals(me.customerId())) {
+                    throw new AccessDeniedException("Forbidden");
+                }
+            }
+        }
+        return a;
     }
 
     @GetMapping("/accounts/{id}/transactions")

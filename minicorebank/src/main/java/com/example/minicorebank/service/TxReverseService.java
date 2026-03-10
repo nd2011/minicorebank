@@ -4,8 +4,8 @@ import com.example.minicorebank.entity.AccountEntity;
 import com.example.minicorebank.entity.TransactionEntity;
 import com.example.minicorebank.repository.AccountRepository;
 import com.example.minicorebank.repository.TransactionRepository;
-import com.example.minicorebank.util.TxRefGenerator;
 import com.example.minicorebank.util.ApiException;
+import com.example.minicorebank.util.TxRefGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class TxReverseService {
     private final AccountRepository accountRepo;
     private final TxRefGenerator txRefGenerator;
 
-    private static final Long SYSTEM_ACCOUNT_ID = 1L;
+    public static final String HOUSE_ACCOUNT_NO = "HOUSE-000";
 
     @Transactional
     public TransactionEntity reverse(Long originalTxId, String idempotencyKey, String note) {
@@ -44,30 +44,29 @@ public class TxReverseService {
         AccountEntity from;
         AccountEntity to;
 
-        // 5) Determine reversal direction
+        // 5) Determine reversal direction (LOCK accounts)
         switch (original.getType()) {
             case "TRANSFER" -> {
-                from = original.getToAccount();
-                to = original.getFromAccount();
+                from = lockById(original.getToAccount().getId());   // đảo chiều
+                to   = lockById(original.getFromAccount().getId());
             }
             case "DEPOSIT" -> {
-                from = original.getToAccount();
-                to = systemAccount();
+                from = lockById(original.getToAccount().getId());   // customer -> HOUSE
+                to   = houseAccountForUpdate();                     // HOUSE lock
             }
             case "WITHDRAW" -> {
-                from = systemAccount();
-                to = original.getFromAccount();
+                from = houseAccountForUpdate();                     // HOUSE lock
+                to   = lockById(original.getFromAccount().getId()); // HOUSE -> customer
             }
-            default -> throw new ApiException("TX_TYPE_NOT_REVERSIBLE", "Unsupported tx type");
+            default -> throw new ApiException("TX_TYPE_NOT_REVERSIBLE", "Unsupported tx type: " + original.getType());
         }
 
-        // 6) Balance check (nếu from không phải system)
-        if (!from.getId().equals(SYSTEM_ACCOUNT_ID)
-                && from.getBalanceSnapshot().compareTo(original.getAmount()) < 0) {
+        // 6) Balance check (nếu from không phải HOUSE)
+        if (!isHouse(from) && from.availableSnapshot().compareTo(original.getAmount()) < 0) {
             throw new ApiException("INSUFFICIENT_FUNDS", "Not enough balance to reverse");
         }
 
-
+        // 7) Apply balances
         from.debit(original.getAmount());
         to.credit(original.getAmount());
         accountRepo.save(from);
@@ -89,8 +88,17 @@ public class TxReverseService {
         return txRepo.save(rev);
     }
 
-    private AccountEntity systemAccount() {
-        return accountRepo.findById(SYSTEM_ACCOUNT_ID)
-                .orElseThrow(() -> new ApiException("SYSTEM_ACCOUNT_NOT_FOUND", "System account missing"));
+    private AccountEntity lockById(Long id) {
+        return accountRepo.findByIdForUpdate(id)
+                .orElseThrow(() -> new ApiException("ACCOUNT_NOT_FOUND", "Account not found: " + id));
+    }
+
+    private boolean isHouse(AccountEntity a) {
+        return HOUSE_ACCOUNT_NO.equals(a.getAccountNo());
+    }
+
+    private AccountEntity houseAccountForUpdate() {
+        return accountRepo.findByAccountNoForUpdate(HOUSE_ACCOUNT_NO)
+                .orElseThrow(() -> new ApiException("HOUSE_ACCOUNT_NOT_FOUND", "HOUSE-000 missing"));
     }
 }

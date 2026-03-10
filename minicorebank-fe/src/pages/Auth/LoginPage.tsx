@@ -43,10 +43,6 @@ export default function LoginPage({ onGoRegister }: LoginPageProps) {
                   </span>
                 </h1>
 
-                <p className="mt-4 max-w-md text-sm text-slate-200/80">
-                  Đăng nhập để quản lý khách hàng, tài khoản, giao dịch và cấu hình hệ thống.
-                </p>
-
                 <div className="mt-7 grid grid-cols-2 gap-3 text-xs text-slate-200/75">
                   {[
                     ["MFA-ready", "Bảo mật nhiều lớp"],
